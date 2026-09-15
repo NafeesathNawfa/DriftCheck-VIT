@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PrivacyNoticeModal from './PrivacyNoticeModal'
 import './LoginScreen.css'
 
 function LoginScreen({ onLogin }) {
@@ -6,6 +7,7 @@ function LoginScreen({ onLogin }) {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [showPrivacy, setShowPrivacy] = useState(false)
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -103,7 +105,26 @@ function LoginScreen({ onLogin }) {
             Password: driftcheck123
           </p>
         </div>
+
+        <div className="login-privacy-footer">
+          <button
+            type="button"
+            className="privacy-badge-btn"
+            onClick={() => setShowPrivacy(true)}
+          >
+            <span>🛡️</span>
+            <span>Privacy Protected · Defense-in-Depth</span>
+          </button>
+          <p className="prototype-disclaimer">
+            Hackathon prototype. Not a certified clinical production system.
+          </p>
+        </div>
       </section>
+
+      <PrivacyNoticeModal
+        isOpen={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
+      />
     </main>
   )
 }

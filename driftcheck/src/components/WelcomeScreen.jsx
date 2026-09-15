@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { biomarkers } from '../config/biomarkers'
+import PrivacyNoticeModal from './PrivacyNoticeModal'
 import {
   ArrowRightIcon,
   BiomarkerGlyph,
@@ -35,7 +37,32 @@ function InfoCard() {
   )
 }
 
-function LogFirstCard({ onManualEntry }) {
+function PrivacyBannerCard({ onOpenPrivacy }) {
+  return (
+    <section className="privacy-banner-card" aria-label="Privacy Architecture">
+      <div className="privacy-banner-body">
+        <div className="privacy-banner-pill">
+          <span>🛡️</span>
+          <span>Privacy Protected</span>
+        </div>
+        <h3>Defense-in-depth medical data privacy</h3>
+        <p>
+          Tokenized patient identifiers, scrubbed AI extraction, and zero
+          differential privacy noise on individual records.
+        </p>
+      </div>
+      <button
+        type="button"
+        className="privacy-banner-btn"
+        onClick={onOpenPrivacy}
+      >
+        View Architecture &rarr;
+      </button>
+    </section>
+  )
+}
+
+function LogFirstCard({ onManualEntry, onOpenPrivacy }) {
   return (
     <section className="log-first-card" aria-label="Log your first reading">
       <span className="log-first-tag">Manual Entry</span>
@@ -49,7 +76,14 @@ function LogFirstCard({ onManualEntry }) {
         Manual Entry
         <ArrowRightIcon />
       </button>
-      <span className="private-note">Private by design</span>
+      <button
+        type="button"
+        className="private-note-btn"
+        onClick={onOpenPrivacy}
+      >
+        <span>🛡️</span>
+        <span>Privacy Protected · Learn how</span>
+      </button>
     </section>
   )
 }
@@ -83,6 +117,8 @@ function CategoryCard({ biomarker, onSelect }) {
 }
 
 function WelcomeScreen({ userName = 'friend', onManualEntry, onSelectBiomarker }) {
+  const [showPrivacy, setShowPrivacy] = useState(false)
+
   return (
     <div className="welcome-screen">
       <header className="app-header">
@@ -92,9 +128,18 @@ function WelcomeScreen({ userName = 'friend', onManualEntry, onSelectBiomarker }
           </span>
           DriftCheck
         </span>
-        <span className="profile-icon" aria-label="Profile">
-          <ProfileIcon />
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            type="button"
+            className="privacy-header-pill"
+            onClick={() => setShowPrivacy(true)}
+          >
+            🛡️ Privacy Protected
+          </button>
+          <span className="profile-icon" aria-label="Profile">
+            <ProfileIcon />
+          </span>
+        </div>
       </header>
 
       <div className="welcome-body">
@@ -110,7 +155,11 @@ function WelcomeScreen({ userName = 'friend', onManualEntry, onSelectBiomarker }
         </section>
 
         <InfoCard />
-        <LogFirstCard onManualEntry={onManualEntry} />
+        <LogFirstCard
+          onManualEntry={onManualEntry}
+          onOpenPrivacy={() => setShowPrivacy(true)}
+        />
+        <PrivacyBannerCard onOpenPrivacy={() => setShowPrivacy(true)} />
 
         <section className="categories">
           <div className="categories-head">
@@ -131,11 +180,32 @@ function WelcomeScreen({ userName = 'friend', onManualEntry, onSelectBiomarker }
         </section>
 
         <footer className="closing-note">
-          Grounded in preventive awareness. Your health data stays yours —
-          DriftCheck tracks your biomarkers longitudinally without selling your
-          data or prompting medical panic.
+          <p className="closing-privacy-title">
+            <strong>Privacy Protected</strong>
+          </p>
+          <p>
+            Your laboratory data is protected using secure data handling,
+            tokenized patient identifiers, access controls, and encryption. Only
+            the information required to process your laboratory results is used.
+          </p>
+          <p className="closing-disclaimer">
+            DriftCheck is a hackathon prototype — not a certified clinical
+            production system.
+          </p>
+          <button
+            type="button"
+            className="privacy-footer-link"
+            onClick={() => setShowPrivacy(true)}
+          >
+            Review Full Privacy &amp; Security Architecture &rarr;
+          </button>
         </footer>
       </div>
+
+      <PrivacyNoticeModal
+        isOpen={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
+      />
     </div>
   )
 }

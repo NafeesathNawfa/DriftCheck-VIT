@@ -33,13 +33,14 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #f7f5f0;
 }
 
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background: #a2dff7;
+  background-color: #f7f5f0;
   font-family:
     Inter,
     ui-sans-serif,
@@ -56,6 +57,7 @@ button {
 
 #root {
   min-height: 100svh;
+  background-color: #f7f5f0;
 }
 
 h1,

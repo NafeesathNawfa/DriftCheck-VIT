@@ -1,9 +1,13 @@
+import { useState } from 'react'
 import { biomarkers } from '../config/biomarkers'
 import { evaluateDrift } from '../lib/driftLogic'
+import PrivacyNoticeModal from './PrivacyNoticeModal'
 import { BiomarkerGlyph } from './icons'
 import './OverviewScreen.css'
 
 function OverviewScreen({ userName }) {
+  const [showPrivacy, setShowPrivacy] = useState(false)
+
   const tracked = biomarkers.filter((b) => {
     const readings = evaluateDrift(b)
     return readings.status !== 'baseline' || b.ready
@@ -14,7 +18,14 @@ function OverviewScreen({ userName }) {
     <div className="overview-screen">
       <header className="app-header">
         <span className="wordmark">DriftCheck</span>
-        <span className="profile-icon" aria-label="Profile" />
+        <button
+          type="button"
+          className="privacy-badge-btn"
+          onClick={() => setShowPrivacy(true)}
+        >
+          <span>🛡️</span>
+          <span>Privacy Protected</span>
+        </button>
       </header>
 
       <div className="overview-body">
@@ -46,7 +57,25 @@ function OverviewScreen({ userName }) {
         <p className="overview-note">
           Full trend views and calm insights arrive with the next build.
         </p>
+
+        <footer className="overview-privacy-footer">
+          <p className="prototype-disclaimer">
+            DriftCheck is a research hackathon prototype — not a certified clinical production system.
+          </p>
+          <button
+            type="button"
+            className="privacy-footer-link"
+            onClick={() => setShowPrivacy(true)}
+          >
+            Review Defense-in-Depth Privacy Architecture &rarr;
+          </button>
+        </footer>
       </div>
+
+      <PrivacyNoticeModal
+        isOpen={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
+      />
     </div>
   )
 }
