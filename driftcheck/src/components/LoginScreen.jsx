@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabaseClient'
+import { isSupabaseConfigured, supabase } from '../lib/supabaseClient'
 import './LoginScreen.css'
 
 const DEMO_EMAIL = 'demo@driftcheck.app'
@@ -16,6 +16,11 @@ function LoginScreen({ onLogin }) {
   async function handleSubmit(event) {
     event.preventDefault()
     setError('')
+
+    if (!isSupabaseConfigured) {
+      setError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to driftcheck/.env.local.')
+      return
+    }
 
     const accountEmail = email.trim().toLowerCase()
     if (!accountEmail || !password) {

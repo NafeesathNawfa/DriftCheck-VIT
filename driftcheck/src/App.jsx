@@ -5,7 +5,7 @@ import LoginScreen from './components/LoginScreen'
 import OverviewScreen from './components/OverviewScreen'
 import WelcomeScreen from './components/WelcomeScreen'
 import { hasAnyReadings, setCurrentAccount } from './lib/storage'
-import { supabase } from './lib/supabaseClient'
+import { isSupabaseConfigured, supabase } from './lib/supabaseClient'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -15,6 +15,11 @@ function App() {
   const [pendingDetailId, setPendingDetailId] = useState(null)
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setCheckingSession(false)
+      return undefined
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setCheckingSession(false)
