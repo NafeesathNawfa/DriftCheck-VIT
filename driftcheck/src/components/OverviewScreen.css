@@ -1,0 +1,78 @@
+.overview-screen {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 20px 96px;
+}
+
+.overview-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.overview-body h1 {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 500;
+  font-size: 34px;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.overview-sub {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 32em;
+}
+
+.overview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.overview-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.overview-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: var(--accent);
+  background: var(--accent-tint);
+}
+
+.overview-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.overview-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.overview-meta {
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+
+.overview-note {
+  font-size: 13px;
+  color: var(--ink-faint);
+  text-align: center;
+  padding: 12px 8px 0;
+}
