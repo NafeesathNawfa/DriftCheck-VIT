@@ -10,29 +10,6 @@
   gap: 28px;
 }
 
-.eyebrow-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.eyebrow-pill {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border: 1px solid rgba(61, 107, 92, 0.25);
-  padding: 5px 12px;
-  border-radius: 999px;
-}
-
-.eyebrow-text {
-  font-size: 14px;
-  color: var(--ink-soft);
-}
-
 .welcome-hero h1 {
   font-family: 'Lora', Georgia, serif;
   font-weight: 500;
@@ -257,6 +234,7 @@
   border: 1px solid rgba(61, 107, 92, 0.25);
   padding: 6px 12px;
   border-radius: 999px;
+  white-space: nowrap;
 }
 
 .closing-note {

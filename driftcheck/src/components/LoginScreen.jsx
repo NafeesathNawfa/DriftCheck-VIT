@@ -1,4 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import {
+  DEMO_EMAIL,
+  DEMO_PASSWORD,
+  ensureDemoAccount,
+  getAccount,
+  hashPassword,
+  registerAccount,
+} from '../lib/storage'
 import './LoginScreen.css'
 
 function LoginScreen({ onLogin }) {
@@ -7,21 +15,28 @@ function LoginScreen({ onLogin }) {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
 
+  useEffect(() => {
+    ensureDemoAccount()
+  }, [])
+
   function handleSubmit(event) {
     event.preventDefault()
 
-    const demoEmail = 'demo@driftcheck.app'
-    const demoPassword = 'driftcheck123'
-
-    if (
-      email.trim().toLowerCase() === demoEmail &&
-      password === demoPassword
-    ) {
-      setError('')
-      onLogin()
-    } else {
-      setError('Incorrect login details. Use the demo credentials below.')
+    const accountEmail = email.trim().toLowerCase()
+    if (!accountEmail || !password) {
+      setError('Enter your email and password to continue.')
+      return
     }
+
+    const account = getAccount(accountEmail)
+    if (account && account.passwordHash !== hashPassword(password)) {
+      setError('Incorrect password for this account.')
+      return
+    }
+
+    const isNew = registerAccount(accountEmail, hashPassword(password))
+    setError('')
+    onLogin(accountEmail, isNew)
   }
 
   return (
@@ -40,7 +55,7 @@ function LoginScreen({ onLogin }) {
           <input
             id="email"
             type="email"
-            placeholder="demo@driftcheck.app"
+            placeholder={DEMO_EMAIL}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             autoComplete="email"
@@ -55,7 +70,7 @@ function LoginScreen({ onLogin }) {
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
-              placeholder="driftcheck123"
+              placeholder={DEMO_PASSWORD}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               autoComplete="current-password"
@@ -98,9 +113,9 @@ function LoginScreen({ onLogin }) {
         <div className="demo-box">
           <strong>Demo credentials</strong>
           <p>
-            Email: demo@driftcheck.app
+            Email: {DEMO_EMAIL}
             <br />
-            Password: driftcheck123
+            Password: {DEMO_PASSWORD}
           </p>
         </div>
       </section>

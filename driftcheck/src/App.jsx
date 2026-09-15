@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import AddBaseline from './components/AddBaseline'
 import BottomTabBar from './components/BottomTabBar'
-import InputForm from './components/InputForm'
 import LoginScreen from './components/LoginScreen'
 import OverviewScreen from './components/OverviewScreen'
 import WelcomeScreen from './components/WelcomeScreen'
-import { hasAnyReadings } from './lib/storage'
+import { hasAnyReadings, setCurrentAccount } from './lib/storage'
 
 const AUTH_KEY = 'driftcheck-authenticated'
 
@@ -17,9 +16,6 @@ function App() {
     hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' },
   )
 
-  const goWelcome = () => setRoute({ name: 'welcome' })
-  const goLog = (biomarkerId = null) =>
-    setRoute({ name: 'log', biomarkerId })
   const goBaseline = (biomarkerId = null) =>
     setRoute({ name: 'baseline', biomarkerId })
   const goOverview = () => setRoute({ name: 'overview' })
@@ -27,30 +23,24 @@ function App() {
     setRoute(hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' })
 
   const handleTab = (id) => {
-    if (id === 'log') goLog()
+    if (id === 'log') goBaseline()
+  }
+
+  const handleLogin = (email) => {
+    setCurrentAccount(email)
+    localStorage.setItem(AUTH_KEY, '1')
+    setAuthenticated(true)
+    setRoute(
+      hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' },
+    )
   }
 
   if (!authenticated) {
-    return (
-      <LoginScreen
-        onLogin={() => {
-          localStorage.setItem(AUTH_KEY, '1')
-          setAuthenticated(true)
-        }}
-      />
-    )
+    return <LoginScreen onLogin={handleLogin} />
   }
 
   let screen
-  if (route.name === 'log') {
-    screen = (
-      <InputForm
-        biomarkerId={route.biomarkerId}
-        onBack={goWelcome}
-        onDone={goOverview}
-      />
-    )
-  } else if (route.name === 'baseline') {
+  if (route.name === 'baseline') {
     screen = (
       <AddBaseline
         biomarkerId={route.biomarkerId}
@@ -59,7 +49,12 @@ function App() {
       />
     )
   } else if (route.name === 'overview') {
-    screen = <OverviewScreen userName="friend" />
+    screen = (
+      <OverviewScreen
+        userName="friend"
+        onAddResult={(biomarkerId) => goBaseline(biomarkerId)}
+      />
+    )
   } else {
     screen = (
       <WelcomeScreen
@@ -73,7 +68,7 @@ function App() {
   return (
     <>
       {screen}
-      <BottomTabBar active={route.name === 'log' ? 'log' : ''} onSelect={handleTab} />
+      <BottomTabBar active={route.name === 'baseline' ? 'log' : ''} onSelect={handleTab} />
     </>
   )
 }

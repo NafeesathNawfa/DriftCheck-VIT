@@ -8,15 +8,6 @@ import {
 } from './icons'
 import './WelcomeScreen.css'
 
-function SectionEyebrow() {
-  return (
-    <div className="eyebrow-row">
-      <span className="eyebrow-pill">First-Time Setup</span>
-      <span className="eyebrow-text">Warm Baseline</span>
-    </div>
-  )
-}
-
 function InfoCard() {
   return (
     <section className="info-card" aria-label="Zero alarmist metrics">
@@ -98,8 +89,6 @@ function WelcomeScreen({ userName = 'friend', onManualEntry, onSelectBiomarker }
       </header>
 
       <div className="welcome-body">
-        <SectionEyebrow />
-
         <section className="welcome-hero">
           <h1>Welcome to DriftCheck, {userName}</h1>
           <p>

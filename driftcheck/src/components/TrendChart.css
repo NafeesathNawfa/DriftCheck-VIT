@@ -1,0 +1,80 @@
+.tc-chart {
+  margin: 0;
+}
+
+.tc-empty {
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+
+.tc-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+.tc-legend-line {
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+.tc-legend-band {
+  display: inline-block;
+  width: 12px;
+  height: 8px;
+  margin-left: 8px;
+  border: 1px solid rgba(61, 107, 92, 0.25);
+  border-radius: 2px;
+  background: var(--accent-tint);
+}
+
+.tc-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tc-band {
+  fill: var(--accent-tint);
+  stroke: rgba(61, 107, 92, 0.25);
+  stroke-width: 1;
+}
+
+.tc-baseline {
+  stroke: var(--accent-strong);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 4;
+  opacity: 0.7;
+}
+
+.tc-line {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tc-dot {
+  fill: #fff;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.tc-ylabel,
+.tc-xlabel {
+  font-size: 10px;
+  fill: var(--ink-faint);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.tc-xlabel-right {
+  text-anchor: end;
+}
