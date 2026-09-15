@@ -1,20 +1,35 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AddBaseline from './components/AddBaseline'
 import BottomTabBar from './components/BottomTabBar'
 import LoginScreen from './components/LoginScreen'
 import OverviewScreen from './components/OverviewScreen'
 import WelcomeScreen from './components/WelcomeScreen'
 import { hasAnyReadings, setCurrentAccount } from './lib/storage'
-
-const AUTH_KEY = 'driftcheck-authenticated'
+import { supabase } from './lib/supabaseClient'
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(
-    () => localStorage.getItem(AUTH_KEY) === '1',
-  )
-  const [route, setRoute] = useState(() =>
-    hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' },
-  )
+  const [session, setSession] = useState(null)
+  const [checkingSession, setCheckingSession] = useState(true)
+  const [route, setRoute] = useState({ name: 'welcome' })
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setCheckingSession(false)
+      if (session) {
+        setCurrentAccount(session.user.email)
+        setRoute(hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' })
+      }
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session)
+      },
+    )
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   const goBaseline = (biomarkerId = null) =>
     setRoute({ name: 'baseline', biomarkerId })
@@ -28,14 +43,14 @@ function App() {
 
   const handleLogin = (email) => {
     setCurrentAccount(email)
-    localStorage.setItem(AUTH_KEY, '1')
-    setAuthenticated(true)
-    setRoute(
-      hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' },
-    )
+    setRoute(hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' })
   }
 
-  if (!authenticated) {
+  if (checkingSession) {
+    return null // or a loading spinner
+  }
+
+  if (!session) {
     return <LoginScreen onLogin={handleLogin} />
   }
 
