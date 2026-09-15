@@ -10,7 +10,7 @@ export default function SignUp() {
   const handleSignUp = async (e) => {
     e.preventDefault()
     
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -20,7 +20,8 @@ export default function SignUp() {
     })
 
     if (error) {
-      setMessage(error.message)
+      console.error('Supabase sign-up failed:', error)
+      setMessage('We could not complete that request. Please try again.')
     } else {
       setMessage('Check your email for the confirmation link!')
     }

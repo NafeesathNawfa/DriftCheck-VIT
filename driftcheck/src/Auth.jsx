@@ -11,7 +11,8 @@ export default function Auth() {
     setError(null)
     const { error } = await supabase.auth.signInWithOtp({ email })
     if (error) {
-      setError(error.message)
+      console.error('Supabase OTP sign-in failed:', error)
+      setError('We could not complete that request. Please try again.')
     } else {
       setSent(true)
     }

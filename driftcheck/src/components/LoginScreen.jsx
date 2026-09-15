@@ -4,6 +4,7 @@ import './LoginScreen.css'
 
 const DEMO_EMAIL = 'demo@driftcheck.app'
 const DEMO_PASSWORD = 'driftcheck123'
+const AUTH_ERROR_MESSAGE = 'We could not complete that request. Please check your details and try again.'
 
 function LoginScreen({ onLogin }) {
   const [email, setEmail] = useState('')
@@ -18,7 +19,7 @@ function LoginScreen({ onLogin }) {
     setError('')
 
     if (!isSupabaseConfigured) {
-      setError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to driftcheck/.env.local.')
+      setError(AUTH_ERROR_MESSAGE)
       return
     }
 
@@ -37,7 +38,8 @@ function LoginScreen({ onLogin }) {
       })
       setLoading(false)
       if (signInError) {
-        setError(signInError.message)
+        console.error('Supabase sign-in failed:', signInError)
+        setError(AUTH_ERROR_MESSAGE)
         return
       }
       onLogin(data.user.email, false)
@@ -48,7 +50,8 @@ function LoginScreen({ onLogin }) {
       })
       setLoading(false)
       if (signUpError) {
-        setError(signUpError.message)
+        console.error('Supabase sign-up failed:', signUpError)
+        setError(AUTH_ERROR_MESSAGE)
         return
       }
       onLogin(data.user.email, true)
