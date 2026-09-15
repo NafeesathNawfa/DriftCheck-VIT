@@ -1,11 +1,17 @@
 import { useState } from 'react'
 import BottomTabBar from './components/BottomTabBar'
 import InputForm from './components/InputForm'
+import LoginScreen from './components/LoginScreen'
 import OverviewScreen from './components/OverviewScreen'
 import WelcomeScreen from './components/WelcomeScreen'
 import { hasAnyReadings } from './lib/storage'
 
+const AUTH_KEY = 'driftcheck-authenticated'
+
 function App() {
+  const [authenticated, setAuthenticated] = useState(
+    () => localStorage.getItem(AUTH_KEY) === '1',
+  )
   const [route, setRoute] = useState(() =>
     hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' },
   )
@@ -17,6 +23,17 @@ function App() {
 
   const handleTab = (id) => {
     if (id === 'log') goLog()
+  }
+
+  if (!authenticated) {
+    return (
+      <LoginScreen
+        onLogin={() => {
+          localStorage.setItem(AUTH_KEY, '1')
+          setAuthenticated(true)
+        }}
+      />
+    )
   }
 
   let screen
