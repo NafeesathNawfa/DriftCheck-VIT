@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AddBaseline from './components/AddBaseline'
 import BottomTabBar from './components/BottomTabBar'
 import InputForm from './components/InputForm'
 import OverviewScreen from './components/OverviewScreen'
@@ -13,7 +14,11 @@ function App() {
   const goWelcome = () => setRoute({ name: 'welcome' })
   const goLog = (biomarkerId = null) =>
     setRoute({ name: 'log', biomarkerId })
+  const goBaseline = (biomarkerId = null) =>
+    setRoute({ name: 'baseline', biomarkerId })
   const goOverview = () => setRoute({ name: 'overview' })
+  const goBackFromBaseline = () =>
+    setRoute(hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' })
 
   const handleTab = (id) => {
     if (id === 'log') goLog()
@@ -28,14 +33,22 @@ function App() {
         onDone={goOverview}
       />
     )
+  } else if (route.name === 'baseline') {
+    screen = (
+      <AddBaseline
+        biomarkerId={route.biomarkerId}
+        onBack={goBackFromBaseline}
+        onDone={goOverview}
+      />
+    )
   } else if (route.name === 'overview') {
     screen = <OverviewScreen userName="friend" />
   } else {
     screen = (
       <WelcomeScreen
         userName="friend"
-        onManualEntry={() => goLog()}
-        onSelectBiomarker={(biomarker) => goLog(biomarker.id)}
+        onManualEntry={() => goBaseline()}
+        onSelectBiomarker={(biomarker) => goBaseline(biomarker.id)}
       />
     )
   }

@@ -1,5 +1,11 @@
 import { getReadings } from './storage'
 
+function toValue(reading) {
+  return typeof reading === 'object' && reading !== null
+    ? Number(reading.value)
+    : Number(reading)
+}
+
 export function evaluateDrift(biomarker) {
   const readings = getReadings()[biomarker.id] || []
   if (readings.length < 5) {
@@ -11,9 +17,10 @@ export function evaluateDrift(biomarker) {
   }
 
   const recent = readings.slice(-5)
-  const inRange = recent.every(
-    (v) => v >= biomarker.range.min && v <= biomarker.range.max,
-  )
+  const inRange = recent.every((reading) => {
+    const value = toValue(reading)
+    return value >= biomarker.range.min && value <= biomarker.range.max
+  })
   if (inRange) {
     return {
       status: 'stable',
