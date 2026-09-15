@@ -341,6 +341,7 @@ function HomeView({
   onOpenDetail,
 }) {
   const [editingName, setEditingName] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const [nameDraft, setNameDraft] = useState(
     session.user.user_metadata?.name || '',
   )
@@ -358,11 +359,13 @@ function HomeView({
   const startEditingName = () => {
     setNameDraft(displayName === 'friend' ? '' : displayName)
     setEditingName(true)
+    setProfileOpen(true)
   }
 
   const cancelEditingName = () => {
     setNameDraft(displayName === 'friend' ? '' : displayName)
     setEditingName(false)
+    setProfileOpen(false)
   }
 
   const saveName = async () => {
@@ -373,7 +376,10 @@ function HomeView({
       data: { name: trimmed },
     })
     setSavingName(false)
-    if (!error) setEditingName(false)
+    if (!error) {
+      setEditingName(false)
+      setProfileOpen(false)
+    }
   }
 
   const handleSignOut = async () => {
@@ -396,8 +402,74 @@ function HomeView({
           <button type="button" className="ov-icon-btn" aria-label="Notifications">
             <BellIcon size={20} />
           </button>
-          <div className="ov-avatar" aria-hidden="true">
-            {displayName.slice(0, 2).toUpperCase()}
+          <div className="ov-profile-menu">
+            <button
+              type="button"
+              className="ov-avatar"
+              aria-label="Open profile menu"
+              aria-expanded={profileOpen}
+              onClick={() => setProfileOpen((open) => !open)}
+            >
+              {displayName.slice(0, 2).toUpperCase()}
+            </button>
+            {profileOpen && (
+              <div className="ov-profile-dropdown" role="menu">
+                <div className="ov-profile-summary">
+                  <strong>{displayName}</strong>
+                  <span>{userEmail}</span>
+                </div>
+                {editingName ? (
+                  <div className="ov-menu-edit-form">
+                    <label htmlFor="profile-name">Your name</label>
+                    <input
+                      id="profile-name"
+                      type="text"
+                      className="ov-name-input"
+                      value={nameDraft}
+                      onChange={(e) => setNameDraft(e.target.value)}
+                      placeholder="Your name"
+                      autoFocus
+                    />
+                    <div className="ov-menu-edit-actions">
+                      <button
+                        type="button"
+                        className="ov-name-save"
+                        onClick={saveName}
+                        disabled={savingName}
+                      >
+                        {savingName ? '...' : 'Save'}
+                      </button>
+                      <button
+                        type="button"
+                        className="ov-name-cancel"
+                        onClick={cancelEditingName}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="ov-menu-item"
+                      role="menuitem"
+                      onClick={startEditingName}
+                    >
+                      Edit name
+                    </button>
+                    <button
+                      type="button"
+                      className="ov-menu-item ov-menu-item-danger"
+                      role="menuitem"
+                      onClick={handleSignOut}
+                    >
+                      Sign out
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -410,50 +482,6 @@ function HomeView({
             Review how your latest lab results compare with your personal
             history.
           </p>
-        </div>
-
-        <div className="ov-account-row">
-          {editingName ? (
-            <div className="ov-name-edit-row">
-              <input
-                type="text"
-                className="ov-name-input"
-                value={nameDraft}
-                onChange={(e) => setNameDraft(e.target.value)}
-                placeholder="Your name"
-                autoFocus
-              />
-              <button
-                type="button"
-                className="ov-name-save"
-                onClick={saveName}
-                disabled={savingName}
-              >
-                {savingName ? '...' : 'Save'}
-              </button>
-              <button
-                type="button"
-                className="ov-name-cancel"
-                onClick={cancelEditingName}
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <>
-              <span className="ov-profile-email">{userEmail}</span>
-              <button
-                type="button"
-                className="ov-name-edit-btn"
-                onClick={startEditingName}
-              >
-                Edit name
-              </button>
-              <button type="button" className="ov-signout-btn" onClick={handleSignOut}>
-                Sign out
-              </button>
-            </>
-          )}
         </div>
 
         <button
