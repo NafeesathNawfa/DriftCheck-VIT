@@ -117,6 +117,43 @@
   max-width: 32em;
 }
 
+.ov-greeting-card,
+.ov-overview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.ov-greeting-card .ov-proto {
+  align-self: flex-start;
+}
+
+.ov-account-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 28px;
+}
+
+.ov-account-row .ov-profile-email {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-faint);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ov-overview-card {
+  gap: 14px;
+}
+
 .ov-primary {
   display: inline-flex;
   align-items: center;
@@ -548,6 +585,32 @@
   box-shadow: var(--shadow-sm);
 }
 
+.ov-chart-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.ov-chart-heading > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ov-chart-kicker {
+  color: var(--ink);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.ov-chart-caption {
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+
 .ov-card {
   display: flex;
   flex-direction: column;
@@ -673,5 +736,85 @@
 
   .ov-detail-title {
     font-size: 26px;
+  }
+}
+.ov-profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ov-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ov-name-edit-btn {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ov-name-edit-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.ov-name-input {
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.ov-name-save,
+.ov-name-cancel {
+  border: none;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.ov-name-save {
+  background: var(--accent);
+  color: white;
+}
+
+.ov-name-cancel {
+  background: transparent;
+  color: #888;
+}
+
+.ov-signout-btn {
+  border: 1px solid rgba(0,0,0,0.1);
+  background: transparent;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  color: var(--clay-red, #b5443a);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .ov-account-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .ov-account-row .ov-profile-email {
+    flex-basis: 100%;
+  }
+
+  .ov-account-row .ov-primary {
+    margin-top: 2px;
   }
 }

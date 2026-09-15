@@ -11,6 +11,8 @@ function App() {
   const [session, setSession] = useState(null)
   const [checkingSession, setCheckingSession] = useState(true)
   const [route, setRoute] = useState({ name: 'welcome' })
+  const [profilePing, setProfilePing] = useState(0)
+  const [pendingDetailId, setPendingDetailId] = useState(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -38,7 +40,12 @@ function App() {
     setRoute(hasAnyReadings() ? { name: 'overview' } : { name: 'welcome' })
 
   const handleTab = (id) => {
-    if (id === 'log') goBaseline()
+    if (id === 'home') goOverview()
+    if (id === 'add') goBaseline()
+    if (id === 'profile') {
+      goOverview()
+      setProfilePing((n) => n + 1)
+    }
   }
 
   const handleLogin = (email) => {
@@ -60,14 +67,22 @@ function App() {
       <AddBaseline
         biomarkerId={route.biomarkerId}
         onBack={goBackFromBaseline}
-        onDone={goOverview}
+        onDone={(savedBiomarkerId) => {
+          setPendingDetailId(savedBiomarkerId ?? route.biomarkerId ?? null)
+          goOverview()
+        }}
       />
     )
   } else if (route.name === 'overview') {
     screen = (
       <OverviewScreen
+        session={session}
         userName="friend"
+        userEmail={session.user.email}
         onAddResult={(biomarkerId) => goBaseline(biomarkerId)}
+        openProfile={profilePing}
+        jumpToDetailId={pendingDetailId}
+        onDetailShown={() => setPendingDetailId(null)}
       />
     )
   } else {
@@ -83,7 +98,10 @@ function App() {
   return (
     <>
       {screen}
-      <BottomTabBar active={route.name === 'baseline' ? 'log' : ''} onSelect={handleTab} />
+      <BottomTabBar
+        active={route.name === 'baseline' ? 'add' : 'home'}
+        onSelect={handleTab}
+      />
     </>
   )
 }

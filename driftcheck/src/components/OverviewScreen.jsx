@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { biomarkers, getBiomarker } from '../config/biomarkers'
 import { analyzeBiomarker } from '../lib/driftLogic'
+import { supabase } from '../lib/supabaseClient'
 import {
   ArrowRightIcon,
   BackIcon,
@@ -38,9 +39,17 @@ function fmtDate(iso) {
   })
 }
 
+function greetingPrefix() {
+  const hour = new Date().getHours()
+  const variant = new Date().getDay() % 2
+  if (hour < 12) return ['Good morning', 'Morning'][variant]
+  if (hour < 17) return ['Good afternoon', 'Hey there'][variant]
+  return ['Good evening', 'Hey there'][variant]
+}
+
 function diffText(a) {
   if (a.absPercent < 0.5) return 'Roughly even with baseline'
-  return `${a.absPercent.toFixed(1)}% ${a.percent > 0 ? 'above' : 'below'} baseline`
+  return `${a.percent > 0 ? '↑' : '↓'} ${a.absPercent.toFixed(1)}% ${a.percent > 0 ? 'above' : 'below'} baseline`
 }
 
 function previousValues(biomarker, analysis) {
@@ -239,6 +248,14 @@ function DetailView({ biomarker, analysis, onBack, onAddResult }) {
       </p>
 
       <section className="ov-chart-card">
+        <div className="ov-chart-heading">
+          <div>
+            <span className="ov-chart-kicker">Longitudinal Trajectory</span>
+            <span className="ov-chart-caption">
+              Your results across sequential readings
+            </span>
+          </div>
+        </div>
         <TrendChart
           values={analysis.values}
           dates={analysis.dates}
@@ -315,7 +332,7 @@ function DetailView({ biomarker, analysis, onBack, onAddResult }) {
 }
 
 function HomeView({
-  userName,
+  session,
   tracked,
   records,
   stableCount,
@@ -323,6 +340,46 @@ function HomeView({
   onAddResult,
   onOpenDetail,
 }) {
+  const [editingName, setEditingName] = useState(false)
+  const [nameDraft, setNameDraft] = useState(
+    session.user.user_metadata?.name || '',
+  )
+  const [savingName, setSavingName] = useState(false)
+
+  const displayName = session.user.user_metadata?.name || 'friend'
+  const userEmail = session.user.email
+  const greeting = `${greetingPrefix()}, ${displayName}`
+  const latestUpdated = tracked
+    .map((biomarker) => analyzeBiomarker(biomarker).latestDate)
+    .filter(Boolean)
+    .sort()
+    .at(-1)
+
+  const startEditingName = () => {
+    setNameDraft(displayName === 'friend' ? '' : displayName)
+    setEditingName(true)
+  }
+
+  const cancelEditingName = () => {
+    setNameDraft(displayName === 'friend' ? '' : displayName)
+    setEditingName(false)
+  }
+
+  const saveName = async () => {
+    const trimmed = nameDraft.trim()
+    if (!trimmed) return
+    setSavingName(true)
+    const { error } = await supabase.auth.updateUser({
+      data: { name: trimmed },
+    })
+    setSavingName(false)
+    if (!error) setEditingName(false)
+  }
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+  }
+
   return (
     <div className="ov-screen">
       <header className="ov-header">
@@ -339,23 +396,67 @@ function HomeView({
           <button type="button" className="ov-icon-btn" aria-label="Notifications">
             <BellIcon size={20} />
           </button>
-          <button type="button" className="ov-avatar" aria-label="Profile">
-            {userName.slice(0, 2).toUpperCase()}
-          </button>
+          <div className="ov-avatar" aria-hidden="true">
+            {displayName.slice(0, 2).toUpperCase()}
+          </div>
         </div>
       </header>
 
-      <span className="ov-proto">Privacy-first prototype</span>
+      <section className="ov-greeting-card">
+        <span className="ov-proto">Privacy-first prototype</span>
+        <div className="ov-greeting">
+          <h1>{greeting}</h1>
+          <p>
+            Review how your latest lab results compare with your personal
+            history.
+          </p>
+        </div>
 
-      <section className="ov-greeting">
-        <h1>Good morning, {userName}</h1>
-        <p>
-          Here is how your recent lab results compare with your own personal
-          pattern.
-        </p>
-      </section>
+        <div className="ov-account-row">
+          {editingName ? (
+            <div className="ov-name-edit-row">
+              <input
+                type="text"
+                className="ov-name-input"
+                value={nameDraft}
+                onChange={(e) => setNameDraft(e.target.value)}
+                placeholder="Your name"
+                autoFocus
+              />
+              <button
+                type="button"
+                className="ov-name-save"
+                onClick={saveName}
+                disabled={savingName}
+              >
+                {savingName ? '...' : 'Save'}
+              </button>
+              <button
+                type="button"
+                className="ov-name-cancel"
+                onClick={cancelEditingName}
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <>
+              <span className="ov-profile-email">{userEmail}</span>
+              <button
+                type="button"
+                className="ov-name-edit-btn"
+                onClick={startEditingName}
+              >
+                Edit name
+              </button>
+              <button type="button" className="ov-signout-btn" onClick={handleSignOut}>
+                Sign out
+              </button>
+            </>
+          )}
+        </div>
 
-<button
+        <button
           type="button"
           className="ov-primary"
           onClick={() => onAddResult()}
@@ -363,10 +464,11 @@ function HomeView({
           <PlusIcon size={18} />
           Add new result
         </button>
+      </section>
 
-      <section className="ov-section">
+      <section className="ov-overview-card">
         <div className="ov-section-head">
-          <h2>Your Overview</h2>
+          <h2>Your overview</h2>
           <span className="ov-count">{records} total records</span>
         </div>
         <div className="ov-stats">
@@ -389,6 +491,9 @@ function HomeView({
         <section className="ov-section">
           <div className="ov-section-head">
             <h2>Latest Lab Results</h2>
+            <span className="ov-updated">
+              Updated {latestUpdated ? fmtDate(latestUpdated) : '—'}
+            </span>
           </div>
           <div className="ov-results">
             {tracked.map((biomarker) => (
@@ -410,8 +515,21 @@ function HomeView({
   )
 }
 
-function OverviewScreen({ userName = 'friend', onAddResult }) {
+function OverviewScreen({
+  session,
+  onAddResult,
+  jumpToDetailId,
+  onDetailShown,
+}) {
   const [detailId, setDetailId] = useState(null)
+
+  useEffect(() => {
+    if (jumpToDetailId) {
+      setDetailId(jumpToDetailId)
+      if (onDetailShown) onDetailShown()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jumpToDetailId])
 
   const tracked = biomarkers.filter((biomarker) =>
     analyzeBiomarker(biomarker).hasData,
@@ -438,7 +556,7 @@ function OverviewScreen({ userName = 'friend', onAddResult }) {
 
   return (
     <HomeView
-      userName={userName}
+      session={session}
       tracked={tracked}
       records={records}
       stableCount={stableCount}
