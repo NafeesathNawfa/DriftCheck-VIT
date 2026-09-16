@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { biomarkers, getBiomarker } from '../config/biomarkers'
-import { evaluateDrift } from '../lib/driftLogic'
+import { analyzeBiomarker } from '../lib/driftLogic'
 import { saveBiomarkerReadings } from '../lib/storage'
 import { ArrowRightIcon, BackIcon, BiomarkerGlyph } from './icons'
 import './AddBaseline.css'
@@ -52,6 +52,18 @@ function meanAndStd(values) {
   const variance =
     values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length
   return { mean, std: Math.sqrt(variance) }
+}
+
+// Short, human note shown on the "Baseline saved" screen, derived from the
+// same analysis object the Overview/Detail screens use (analyzeBiomarker).
+function resultNote(analysis) {
+  if (analysis.status === 'stable') {
+    return 'Your latest reading is consistent with your recent pattern. Nothing to act on right now.'
+  }
+  if (analysis.sudden.flagged) {
+    return 'This reading is a sudden change compared with your recent readings — worth mentioning at your next visit.'
+  }
+  return `This reading continues a gradual ${analysis.drift.direction === 'down' ? 'downward' : 'upward'} trend across your recent readings — worth keeping an eye on.`
 }
 
 function AddBaselineHeader({ onBack }) {
@@ -179,7 +191,10 @@ function BaselineForm({ biomarker, onBack, onComplete }) {
       value: Number(Number(entry.value).toFixed(decimalsOf(step))),
     }))
     saveBiomarkerReadings(biomarker.id, readings)
-    onComplete({ biomarker, readings, result: evaluateDrift(biomarker) })
+    // Use the same analysis function the Overview/Detail screens use, so the
+    // "Baseline saved" confirmation always agrees with what the user sees
+    // afterward on the Overview screen.
+    onComplete({ biomarker, readings, result: analyzeBiomarker(biomarker) })
   }
 
   return (
@@ -281,8 +296,8 @@ function BaselineResult({ biomarker, readings, result, onFinish }) {
         <span className="ba-result-icon">
           <BiomarkerGlyph id={biomarker.id} size={30} />
         </span>
-        <h2>{result.label}</h2>
-        <p>{result.note}</p>
+        <h2>{result.tag}</h2>
+        <p>{resultNote(result)}</p>
         <div className="ba-result-stats">
           <div className="ba-stat">
             <span>Mean baseline</span>
