@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { biomarkers, getBiomarker } from '../config/biomarkers'
 import { analyzeBiomarker } from '../lib/driftLogic'
 import { supabase } from '../lib/supabaseClient'
+import { deleteBiomarkerReadings } from '../lib/storage'
 import {
   ArrowRightIcon,
   BackIcon,
@@ -196,6 +197,15 @@ function DetailView({ biomarker, analysis, onBack, onAddResult }) {
   const [copied, setCopied] = useState(false)
   const flagged = analysis.status === 'review'
 
+  const deleteHistory = () => {
+    const confirmed = window.confirm(
+      `Delete all ${biomarker.name} history? This cannot be undone.`,
+    )
+    if (!confirmed) return
+    deleteBiomarkerReadings(biomarker.id)
+    onBack()
+  }
+
   const copySummary = async (event) => {
     event.stopPropagation()
     try {
@@ -209,9 +219,16 @@ function DetailView({ biomarker, analysis, onBack, onAddResult }) {
 
   return (
     <div className="ov-screen ov-detail-screen">
-      <button type="button" className="ov-back" onClick={onBack}>
-        <BackIcon size={18} /> Overview
-      </button>
+      <MedicalNotice />
+
+      <div className="ov-detail-toolbar">
+        <button type="button" className="ov-back" onClick={onBack}>
+          <BackIcon size={18} /> Overview
+        </button>
+        <button type="button" className="ov-delete-history" onClick={deleteHistory}>
+          Delete history
+        </button>
+      </div>
 
       <div className="ov-detail-eyebrow-row">
         <span className="ov-eyebrow">Personal Trend: {biomarker.name}</span>
@@ -325,8 +342,6 @@ function DetailView({ biomarker, analysis, onBack, onAddResult }) {
       </button>
 
       <DataCard />
-
-      <MedicalNotice />
     </div>
   )
 }
@@ -388,6 +403,8 @@ function HomeView({
 
   return (
     <div className="ov-screen">
+      <MedicalNotice />
+
       <header className="ov-header">
         <div className="ov-brand">
           <span className="ov-logo">
@@ -537,8 +554,6 @@ function HomeView({
       )}
 
       <DataCard />
-
-      <MedicalNotice />
     </div>
   )
 }

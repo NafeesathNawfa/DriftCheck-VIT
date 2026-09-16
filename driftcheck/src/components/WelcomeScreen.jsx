@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { biomarkers } from '../config/biomarkers'
+import { supabase } from '../lib/supabaseClient'
 import PrivacyNoticeModal from './PrivacyNoticeModal'
 import {
   ArrowRightIcon,
@@ -107,8 +108,44 @@ function CategoryCard({ biomarker, onSelect }) {
   )
 }
 
-function WelcomeScreen({ userName = 'friend', onManualEntry, onSelectBiomarker }) {
+function WelcomeScreen({
+  session,
+  userName = 'friend',
+  onManualEntry,
+  onSelectBiomarker,
+}) {
   const [showPrivacy, setShowPrivacy] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [editingName, setEditingName] = useState(false)
+  const [nameDraft, setNameDraft] = useState(
+    session?.user.user_metadata?.name || '',
+  )
+  const [savingName, setSavingName] = useState(false)
+
+  const displayName = session?.user.user_metadata?.name || userName
+  const email = session?.user.email || ''
+
+  const startEditingName = () => {
+    setNameDraft(displayName === 'friend' ? '' : displayName)
+    setEditingName(true)
+  }
+
+  const cancelEditingName = () => {
+    setEditingName(false)
+    setProfileOpen(false)
+  }
+
+  const saveName = async () => {
+    const trimmed = nameDraft.trim()
+    if (!trimmed) return
+    setSavingName(true)
+    const { error } = await supabase.auth.updateUser({ data: { name: trimmed } })
+    setSavingName(false)
+    if (!error) {
+      setEditingName(false)
+      setProfileOpen(false)
+    }
+  }
 
   return (
     <div className="welcome-screen">
@@ -127,9 +164,65 @@ function WelcomeScreen({ userName = 'friend', onManualEntry, onSelectBiomarker }
           >
             🛡️ Privacy Protected
           </button>
-          <span className="profile-icon" aria-label="Profile">
-            <ProfileIcon />
-          </span>
+          <div className="welcome-profile-menu">
+            <button
+              type="button"
+              className="profile-icon"
+              aria-label="Open profile menu"
+              aria-expanded={profileOpen}
+              onClick={() => setProfileOpen((open) => !open)}
+            >
+              <ProfileIcon />
+            </button>
+            {profileOpen && (
+              <div className="welcome-profile-dropdown" role="menu">
+                <div className="welcome-profile-summary">
+                  <strong>{displayName}</strong>
+                  <span>{email}</span>
+                </div>
+                {editingName ? (
+                  <div className="welcome-profile-edit">
+                    <label htmlFor="welcome-profile-name">Your name</label>
+                    <input
+                      id="welcome-profile-name"
+                      type="text"
+                      value={nameDraft}
+                      onChange={(event) => setNameDraft(event.target.value)}
+                      placeholder="Your name"
+                      autoFocus
+                    />
+                    <div className="welcome-profile-actions">
+                      <button type="button" onClick={saveName} disabled={savingName}>
+                        {savingName ? '...' : 'Save'}
+                      </button>
+                      <button type="button" onClick={cancelEditingName}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="welcome-profile-item"
+                      role="menuitem"
+                      onClick={startEditingName}
+                    >
+                      Edit name
+                    </button>
+                    <button
+                      type="button"
+                      className="welcome-profile-item is-danger"
+                      role="menuitem"
+                      onClick={() => supabase.auth.signOut()}
+                    >
+                      Sign out
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

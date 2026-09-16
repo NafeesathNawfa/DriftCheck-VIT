@@ -91,6 +91,12 @@ export function saveBiomarkerReadings(id, readings) {
   localStorage.setItem(readingsKey(), JSON.stringify(all))
 }
 
+export function deleteBiomarkerReadings(id) {
+  const all = getReadings()
+  delete all[id]
+  localStorage.setItem(readingsKey(), JSON.stringify(all))
+}
+
 export function hasAnyReadings() {
   return Object.keys(getReadings()).length > 0
 }

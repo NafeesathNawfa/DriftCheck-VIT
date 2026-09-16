@@ -582,6 +582,29 @@
   padding: 4px 0;
 }
 
+.ov-detail-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ov-delete-history {
+  border: 1px solid rgba(180, 84, 63, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ov-clay);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 11px;
+  cursor: pointer;
+}
+
+.ov-delete-history:hover {
+  background: var(--ov-clay-tint);
+}
+
 .ov-back:hover {
   color: var(--ink);
 }

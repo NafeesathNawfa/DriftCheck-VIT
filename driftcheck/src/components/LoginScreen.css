@@ -117,11 +117,6 @@
   box-shadow: 0 4px 14px rgba(0, 123, 134, 0.24);
 }
 
-.login-submit:hover {
-  background: #005f6b;
-  box-shadow: 0 6px 18px rgba(0, 123, 134, 0.3);
-}
-
 .login-forgot {
   display: block;
   margin: 20px auto 0;

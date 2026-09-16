@@ -88,6 +88,7 @@ function App() {
   } else {
     screen = (
       <WelcomeScreen
+        session={session}
         userName="friend"
         onManualEntry={() => goBaseline()}
         onSelectBiomarker={(biomarker) => goBaseline(biomarker.id)}
