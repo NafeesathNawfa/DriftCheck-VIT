@@ -80,74 +80,6 @@
   margin-top: -6px;
 }
 
-.ba-upload-card {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 10px 16px;
-  background: var(--accent-tint);
-  border: 1px solid rgba(61, 107, 92, 0.22);
-  border-radius: var(--radius);
-  padding: 16px;
-}
-
-.ba-upload-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.ba-upload-title {
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.ba-upload-sub {
-  color: var(--ink-soft);
-  font-size: 12.5px;
-  line-height: 1.45;
-}
-
-.ba-upload-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-sm);
-  background: var(--card);
-  color: var(--accent-strong);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 9px 13px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.ba-upload-button:hover {
-  background: var(--accent);
-  color: #fff;
-}
-
-.ba-upload-button input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
-.ba-upload-file {
-  grid-column: 1 / -1;
-  overflow: hidden;
-  color: var(--accent-strong);
-  font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .ba-section-title {
   font-family: 'Lora', Georgia, serif;
   font-weight: 500;
@@ -522,12 +454,3 @@
   color: var(--ink-faint);
 }
 
-@media (max-width: 460px) {
-  .ba-upload-card {
-    grid-template-columns: 1fr;
-  }
-
-  .ba-upload-button {
-    width: 100%;
-  }
-}

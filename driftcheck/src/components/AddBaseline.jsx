@@ -146,7 +146,6 @@ function BaselineForm({ biomarker, onBack, onComplete }) {
     Array.from({ length: 5 }, () => ({ ...EMPTY_ENTRY })),
   )
   const [error, setError] = useState('')
-  const [reportName, setReportName] = useState('')
 
   const step = biomarker.step
   const referenceDate = latestDateOf(entries)
@@ -163,19 +162,6 @@ function BaselineForm({ biomarker, onBack, onComplete }) {
         i === index ? { ...entry, value: stepFrom(entry.value, step, direction) } : entry,
       ),
     )
-
-  const handleReportUpload = (event) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-      setReportName('')
-      setError('Choose a PDF lab report.')
-      event.target.value = ''
-      return
-    }
-    setError('')
-    setReportName(file.name)
-  }
 
   const submit = (event) => {
     event.preventDefault()
@@ -202,28 +188,6 @@ function BaselineForm({ biomarker, onBack, onComplete }) {
       <span className="ba-eyebrow">{biomarker.category}</span>
       <h1 className="ba-headline">Add Baseline</h1>
       <p className="ba-lede">{BODY_COPY}</p>
-
-      <section className="ba-upload-card">
-        <div className="ba-upload-copy">
-          <span className="ba-upload-title">Have a lab report?</span>
-          <span className="ba-upload-sub">
-            Select a PDF to keep beside this entry while you review your results.
-          </span>
-        </div>
-        <label className="ba-upload-button">
-          <input
-            type="file"
-            accept="application/pdf,.pdf"
-            onChange={handleReportUpload}
-          />
-          Upload PDF
-        </label>
-        {reportName && (
-          <span className="ba-upload-file" title={reportName}>
-            Selected: {reportName}
-          </span>
-        )}
-      </section>
 
       <h2 className="ba-section-title">Historical Readings</h2>
       <div className="ba-historical">
