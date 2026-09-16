@@ -2,9 +2,6 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import './LoginScreen.css'
 
-const DEMO_EMAIL = 'demo@driftcheck.app'
-const DEMO_PASSWORD = 'driftcheck123'
-
 function LoginScreen({ onLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -71,7 +68,7 @@ function LoginScreen({ onLogin }) {
           <input
             id="email"
             type="email"
-            placeholder={DEMO_EMAIL}
+            placeholder="you@example.com"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             autoComplete="email"
@@ -85,7 +82,7 @@ function LoginScreen({ onLogin }) {
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
-              placeholder={DEMO_PASSWORD}
+              placeholder="Enter your password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
@@ -126,14 +123,6 @@ function LoginScreen({ onLogin }) {
             : 'Already have an account? Log in'}
         </button>
 
-        <div className="demo-box">
-          <strong>Demo credentials</strong>
-          <p>
-            Email: {DEMO_EMAIL}
-            <br />
-            Password: {DEMO_PASSWORD}
-          </p>
-        </div>
       </section>
     </main>
   )
